@@ -22,15 +22,15 @@ jobs:
     - name: Log in to registry
       uses: docker/login-action@v2
       with:
-        registry: https://mcr.microsoft.com/
-        username: ${{ secrets.AzureAppService_ContainerUsername_ad213c12b2e54f70a99acc4bc9a0a200 }}
-        password: ${{ secrets.AzureAppService_ContainerPassword_86daaafb52864ed49ae6128c71012ba7 }}
+        registry: https://index.docker.io/v1/
+        username: ${{ secrets.AzureAppService_ContainerUsername_2db14898da1747569a14ce054cb87037 }}
+        password: ${{ secrets.AzureAppService_ContainerPassword_d7a428ac8f8e407c90f9d4bd769bcd81 }}
 
     - name: Build and push container image to registry
       uses: docker/build-push-action@v3
       with:
         push: true
-        tags: mcr.microsoft.com/${{ secrets.AzureAppService_ContainerUsername_ad213c12b2e54f70a99acc4bc9a0a200 }}/appsvc/staticsite:${{ github.sha }}
+        tags: index.docker.io/${{ secrets.AzureAppService_ContainerUsername_2db14898da1747569a14ce054cb87037 }}/rashi19bce0757/rashi-docker:${{ github.sha }}
         file: ./Dockerfile
 
   deploy:
@@ -47,5 +47,5 @@ jobs:
       with:
         app-name: 'RashiWebApp'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_523a753fe0b0437a8b44e4f1d869c69b }}
-        images: 'mcr.microsoft.com/${{ secrets.AzureAppService_ContainerUsername_ad213c12b2e54f70a99acc4bc9a0a200 }}/appsvc/staticsite:${{ github.sha }}'
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_6264f6065fae4ba8a7cf44119c42de4f }}
+        images: 'index.docker.io/${{ secrets.AzureAppService_ContainerUsername_2db14898da1747569a14ce054cb87037 }}/rashi19bce0757/rashi-docker:${{ github.sha }}'
