@@ -1,0 +1,51 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: Build and deploy container app to Azure Web App - RashiWebApp
+
+on:
+  push:
+    branches:
+      - Rashi-maru-FeatureBranch
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: 'ubuntu-latest'
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Log in to registry
+      uses: docker/login-action@v2
+      with:
+        registry: https://index.docker.io/v1/
+        username: ${{ secrets.AzureAppService_ContainerUsername_2db14898da1747569a14ce054cb87037 }}
+        password: ${{ secrets.AzureAppService_ContainerPassword_d7a428ac8f8e407c90f9d4bd769bcd81 }}
+
+    - name: Build and push container image to registry
+      uses: docker/build-push-action@v3
+      with:
+        push: true
+        tags: index.docker.io/${{ secrets.AzureAppService_ContainerUsername_2db14898da1747569a14ce054cb87037 }}/rashi19bce0757/rashi-docker:${{ github.sha }}
+        file: ./Dockerfile
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: 'production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
+    steps:
+    - name: Deploy to Azure Web App
+      id: deploy-to-webapp
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'RashiWebApp'
+        slot-name: 'production'
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_6264f6065fae4ba8a7cf44119c42de4f }}
+        images: 'index.docker.io/${{ secrets.AzureAppService_ContainerUsername_2db14898da1747569a14ce054cb87037 }}/rashi19bce0757/rashi-docker:${{ github.sha }}'
